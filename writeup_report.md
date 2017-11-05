@@ -88,9 +88,9 @@ Right camera image: if the center camera will see this, we need to steer to the 
 
 #### Dropout ####
 
-The model contains two dropout layers between fully-connected ones, which also should help with the regularisation.
+The model contains two dropout layers between fully-connected ones, which should also help with the regularisation.
 
-#### Check that modek does not overfitt ### 
+#### Check that model does not overfitt ### 
 
 I shuffled samples and splitted them in training and validation datasets (80%/20%) to ensure that the model was not overfitting (code line 103). 
 
@@ -149,18 +149,18 @@ First experiments with the model showed that the network can be distracted by su
 
 I tried different color spaces and finally decided to use two channels instead of original RGB:
 
-1. Green channel of RGB color space that is good for detection of yellow/red lines and bridge sides. First I tried to take the gray channel, but green produces more contrast on white/red stripes.
-2. S channel of HLS color space. It is good for detection of road/sand border but completely fails on bridge bars.
+1. Green channel of the RGB color space that is good for detection of yellow/red lines and bridge sides. First I tried to take the gray channel, but green produces more contrast on white/red stripes.
+2. S channel of the HLS color space. It is good for detection of road/sand border but completely fails on bridge bars.
 
 These two channels combined provide clear road border in all combination of ground and lighting conditions.
 
-Bridge - here the G channel provides a clean border.
+Bridge, here the G channel provides the best results.
 <img src="images/bridge_2c.jpg" />
 
-Sand - here the S channel performs better.
+Sand, here the S channel performs better.
 <img src="images/sand_2c.jpg" />
 
-At the end all images were cropped to 320x80 pixels by cutting to 60 and bottom 20 rows. 
+At the end all images were cropped to 320x80 pixels by cutting top 60 and bottom 20 rows. 
  
 <img src="images/crop.jpg" />  
 
