@@ -6,8 +6,8 @@ import sklearn
 from sklearn.model_selection import train_test_split
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda, Dropout, Activation
-from keras.layers import Conv2D, MaxPooling2D, BatchNormalization, LeakyReLU
+from keras.layers import Flatten, Dense, Lambda, Dropout
+from keras.layers import Conv2D, BatchNormalization, LeakyReLU
 
 samples = np.empty([0])
 
