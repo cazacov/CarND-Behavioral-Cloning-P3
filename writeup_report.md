@@ -64,21 +64,26 @@ To reduce overfitting I did two things:
 Every image is flipped horizontaly, which effectively produces another training map were car drives in opposite direction.  
 
 Source:
+
 <img src="images/normal.jpg" />
 
 Derived image:
+
 <img src="images/flipped.jpg" />
 
 
 I also used images from side cameras adding correction value +-0.25 to the measured steering angle.
 
 Center camera: use the recorded angle.
+
 <img src="images/center.jpg" />
 
 Left camera image: if the center camera will see this, we need to steer to the right. Add +0.25 to the measured angle.
+
 <img src="images/left.jpg" />
 
-Right camera image: if the center camera will see this, we need to steer to the left. Add +0.25 to the measured angle.
+Right camera image: if the center camera will see this, we need to steer to the left. Add -0.25 to the measured angle.
+
 <img src="images/right.jpg" />
 
 #### Dropout ####
@@ -150,7 +155,7 @@ I tried different color spaces and finally decided to use two channels instead o
 These two channels combined provide clear road border in all combination of ground and lighting conditions.
 
 Bridge - here the G channel provides a clean border.
-<img src="images/sand_2c.jpg" />
+<img src="images/bridge_2c.jpg" />
 
 Sand - here the S channel performs better.
 <img src="images/sand_2c.jpg" />
@@ -158,6 +163,10 @@ Sand - here the S channel performs better.
 At the end all images were cropped to 320x80 pixels by cutting to 60 and bottom 20 rows. 
  
 <img src="images/crop.jpg" />  
+
+### Driving in simulator ###
+
+The same color correction and cropping were applied to images in the drive.py file (code line 73).
  
 ### Data feed ###
 
