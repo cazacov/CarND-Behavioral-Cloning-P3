@@ -12,6 +12,8 @@ from PIL import Image
 from flask import Flask
 from io import BytesIO
 
+import cv2
+
 from keras.models import load_model
 import h5py
 from keras import __version__ as keras_version
@@ -47,6 +49,11 @@ controller = SimplePIController(0.1, 0.002)
 set_speed = 9
 controller.set_desired(set_speed)
 
+def preprocess_color(image):
+    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+    gray = image[:, :, 1]
+    return np.dstack((gray, hls[:, :, 2]))
+
 
 @sio.on('telemetry')
 def telemetry(sid, data):
@@ -63,7 +70,7 @@ def telemetry(sid, data):
         image_array = np.asarray(image)
 
         # Crop the image same as it was done during the learning
-        image_array = image_array[60:140, 50:270]
+        image_array = preprocess_color(image_array[60:140])
 
         steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
 
