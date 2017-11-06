@@ -179,3 +179,6 @@ At the end of the process, the vehicle is able to drive autonomously around the 
 
 The autonomous driving is recorded in video "video.mp4" 
 
+<video width="320" height="240" controls>
+  <source src="./video.mp4">
+</video>
