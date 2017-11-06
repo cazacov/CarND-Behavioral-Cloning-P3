@@ -46,7 +46,7 @@ python drive.py model.h5
 
 ### Solution Design Approach ###
 
-My first approach was to take the simpliest possible model with a single dense layer to test the tool chain and to become acquainted with Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in Udacity chapter 14 "Even More Powerful Network".
+My first approach was to take the simplest possible model with a single dense layer to test the tool chain and to become acquainted with Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in Udacity chapter 14 "Even More Powerful Network".
 
 My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). Five convolution layers are followed by three fully-connected layers that finally produce a single float value of desired steering angle.
 First two fully connected layers have linear exponential activation (ELU). The last layer has the default linear activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
@@ -55,9 +55,9 @@ First two fully connected layers have linear exponential activation (ELU). The l
 
 To reduce overfitting I did two things:
 
-#### Gathered more data ####
+#### Gather more data ####
 
-Every image is flipped horizontaly, which effectively produces another training map were car drives in opposite direction.  
+Every image is flipped horizontally, which effectively produces another training map were car drives in opposite direction.  
 
 Source:
 
@@ -84,7 +84,7 @@ Right camera image: if the center camera will see this, we need to steer to the 
 
 #### Dropout ####
 
-The model contains two dropout layers between fully-connected ones which should also help with the regularisation.
+The model contains two dropout layers between fully-connected ones which should also help with the regularization.
 
 #### Check that model does not overfitt ### 
 
@@ -100,7 +100,7 @@ The chart looks exactly as expected. There is no sign of overfiiting when the tr
 
 ### Model parameter tuning ###
 
-The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recomended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
+The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
 
 ### Training data ###
 
@@ -109,7 +109,7 @@ To gather enough training data I recorded the following scenarios:
 1. Drive three laps counterclockwise keeping the car in the middle of the road.
 2. Drive three laps clockwise keeping the car in the middle of the road.
 3. Drive four recovery laps where I intentionally steered the car to the side and then returned it to the road. To learn only the good behavior (returning back) in these records I import only samples with positive or only negative steering angles.
-4. Drive carefully through the curves. In this case I only import the samples with non zero steering angle.
+4. Drive carefully through the curves. In this case I only import the samples with non-zero steering angle.
 
 Here is an example of good behavior that model should learn:
 
@@ -150,10 +150,10 @@ I tried different color spaces and finally decided to use two channels instead o
 
 These two channels combined provide clear road border in all combination of ground and lighting conditions.
 
-Bridge, here the G channel provides the best results.
+Bridge. Here the G channel provides the best results.
 <img src="images/bridge_2c.jpg" />
 
-Sand, here the S channel performs better.
+Sand. Here the S channel performs better.
 <img src="images/sand_2c.jpg" />
 
 At the end all images were cropped to 320x80 pixels by cutting top 60 and bottom 20 rows. 
