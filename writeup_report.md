@@ -175,6 +175,8 @@ I recorded more than 700 Megabytes of sample images. To save the memory I used p
 
 ### Final Model Architecture ###
 
+<img src="images/architecture.png" />  
+
 ## Results ##
 
 At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
