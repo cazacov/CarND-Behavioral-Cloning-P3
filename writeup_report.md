@@ -41,25 +41,21 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 python drive.py model.h5
 ```
 
-Here is an example of car driving autonomously one lap in simulator:
-
-![](video.mp4)
-
 
 ## Model Architecture and Training Strategy ##
 
 ### Solution Design Approach ###
 
-My first approach was to take the simpliest possible model with a single dense layer to test the tool chain and learn Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in chapter 14 "Even More Powerful Network".
+My first approach was to take the simpliest possible model with a single dense layer to test the tool chain and to become acquainted with Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in Udacity chapter 14 "Even More Powerful Network".
 
 My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). Five convolution layers are followed by three fully-connected layers that finally produce a single float value of desired steering angle.
-First two fully connected layers have linear exponential activation (ELU).
+First two fully connected layers have linear exponential activation (ELU). The last layer has the default linear activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
 
 ### Reducing overfitting ###
 
 To reduce overfitting I did two things:
 
-#### Gather more data ####
+#### Gathered more data ####
 
 Every image is flipped horizontaly, which effectively produces another training map were car drives in opposite direction.  
 
@@ -88,11 +84,11 @@ Right camera image: if the center camera will see this, we need to steer to the 
 
 #### Dropout ####
 
-The model contains two dropout layers between fully-connected ones, which should also help with the regularisation.
+The model contains two dropout layers between fully-connected ones which should also help with the regularisation.
 
 #### Check that model does not overfitt ### 
 
-I shuffled samples and splitted them in training and validation datasets (80%/20%) to ensure that the model was not overfitting (code line 103). 
+I shuffled samples and splitted them in training and validation datasets 80% / 20% to ensure that the model do not overfitt (code line 103). 
 
 The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
@@ -100,20 +96,20 @@ The model was tested by running it through the simulator and ensuring that the v
 
 <img src="images/validation-loss.png" />
 
-Here there is no sign of overfiiting when the training loss keeps decreasing, while the validation loss gets stuck on constant level.
+The chart looks exactly as expected. There is no sign of overfiiting when the training loss keeps decreasing, while the validation loss gets stuck on constant level.
 
 ### Model parameter tuning ###
 
-The model used an adam optimizer, which has default learning rate of 0.001. When using dropout layers it's recomended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
+The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recomended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
 
 ### Training data ###
 
 To gather enough training data I recorded the following scenarios:
 
-1. Drive three laps counter clockwise keeping the car in the middle of the road.
-2. Drive three laps clockwise keeping the car in the middle of the road
-3. Drive four recovery laps where I intentionally steered the car to the side and then returned it to the road. To learn only the good behavior (returning back) in these records I use only samples with positive or only negative steering angles.
-4. Drive carefully through the curves. In this records I only import samples with non zero steering angle.
+1. Drive three laps counterclockwise keeping the car in the middle of the road.
+2. Drive three laps clockwise keeping the car in the middle of the road.
+3. Drive four recovery laps where I intentionally steered the car to the side and then returned it to the road. To learn only the good behavior (returning back) in these records I import only samples with positive or only negative steering angles.
+4. Drive carefully through the curves. In this case I only import the samples with non zero steering angle.
 
 Here is an example of good behavior that model should learn:
 
@@ -129,14 +125,14 @@ The import and filtering is handled in the function "importCsv".
 samples = np.append(samples, importCsv('ccw'))
 samples = np.append(samples, importCsv('cw'))
 
-samples = np.append(samples, importCsv('curves-ccw', curvesOnly=True))
+samples = np.append(samples, importCsv('curves-ccw', curvesOnly=True))  # That will import only non-zero values
 samples = np.append(samples, importCsv('curves-2', curvesOnly=True))
 samples = np.append(samples, importCsv('curves-3', curvesOnly=True))
 
-samples = np.append(samples, importCsv('recovery-minus', negativeOnly=True))
+samples = np.append(samples, importCsv('recovery-minus', negativeOnly=True))  # Imports only negative values 
 samples = np.append(samples, importCsv('recovery-plus', positiveOnly=True))
 samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly=True))
-samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly=True))
+samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly=True))  # Imports only positive values
 ```   
 
 These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 79554 samples.  
@@ -147,10 +143,10 @@ First experiments with the model showed that the network can be distracted by su
 
 <img src="images/sand.jpg" />
 
-I tried different color spaces and finally decided to use two channels instead of original RGB:
+I tried different color spaces and finally decided to use two channels instead of original 3 in RGB:
 
-1. Green channel of the RGB color space that is good for detection of yellow/red lines and bridge sides. First I tried to take the gray channel, but green produces more contrast on white/red stripes.
-2. S channel of the HLS color space. It is good for detection of road/sand border but completely fails on bridge bars.
+1. Green channel of the RGB color space that is good for detection of yellow/red lines and bridge sides. First I tried to take the gray channel, but the green produces more contrast on white/red stripes.
+2. "S" channel of the HLS color space. It is good for detection of road/sand border (but completely fails on bridge bars).
 
 These two channels combined provide clear road border in all combination of ground and lighting conditions.
 
