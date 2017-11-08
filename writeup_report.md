@@ -48,8 +48,24 @@ python drive.py model.h5
 
 My first approach was to take the simplest possible model with a single dense layer to test the tool chain and to become acquainted with Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in Udacity chapter 14 "Even More Powerful Network".
 
-My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). Five convolution layers are followed by three fully-connected layers that finally produce a single float value of desired steering angle.
-First two fully connected layers have linear exponential activation (ELU). The last layer has the default linear activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
+My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). 
+
+As the information goes through the network the learned features should be getting more general with every next layer.
+In ideal case the layer outputs should have somewhat the following semantic meaning:
+
+1. Edges and corners
+2. Textures (asphalt, sand, paint)
+3. Patterns (painted yellow line, asphalt->sand border)
+4. Parts (lane marker, sharp curve marker)
+5. Objects (traffic lane, road)
+ 
+
+These convolution layers are followed by four fully-connected layers that finally produce a single float value of desired steering angle.
+First three fully connected layers have linear exponential activation (ELU). The last layer has the TANH activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
+
+Then TANH activation was chosen because it smoothly maps any number into range (-1,1). The function is almost linear near 0.
+
+Training one epoch takes about 180 seconds on a GPU instance in cloud.  
 
 ### Reducing overfitting ###
 
@@ -98,6 +114,8 @@ The model was tested by running it through the simulator and ensuring that the v
 
 The chart looks exactly as expected. There is no sign of overfiiting when the training loss keeps decreasing, while the validation loss gets stuck on constant level.
 
+After 16 epochs the validation loss gets stable und further learning does not improve the accuracy.
+
 ### Model parameter tuning ###
 
 The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
@@ -122,20 +140,28 @@ And here I show how to recover from the trouble by steering 15 degrees right:
 The import and filtering is handled in the function "importCsv".
 
 ```python
+# Drive in the middle of the road
 samples = np.append(samples, importCsv('ccw'))
 samples = np.append(samples, importCsv('cw'))
 
-samples = np.append(samples, importCsv('curves-ccw', curvesOnly=True))  # That will import only non-zero values
-samples = np.append(samples, importCsv('curves-2', curvesOnly=True))
-samples = np.append(samples, importCsv('curves-3', curvesOnly=True))
+# Curves
+samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
+samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-4', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-5', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-6', curvesOnly = True))
 
-samples = np.append(samples, importCsv('recovery-minus', negativeOnly=True))  # Imports only negative values 
-samples = np.append(samples, importCsv('recovery-plus', positiveOnly=True))
-samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly=True))
-samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly=True))  # Imports only positive values
+# Recovery
+samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
+samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
+samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
 ```   
 
-These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 79554 samples.  
+These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 90390 samples.  
 
 ### Preprocessing ###
 

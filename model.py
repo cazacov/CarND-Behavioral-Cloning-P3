@@ -6,7 +6,7 @@ import sklearn
 from sklearn.model_selection import train_test_split
 
 from keras.models import Sequential
-from keras.layers import Flatten, Dense, Lambda, Dropout
+from keras.layers import Flatten, Dense, Lambda, Dropout, Activation
 from keras.layers import Conv2D, BatchNormalization, LeakyReLU
 
 samples = np.empty([0])
@@ -67,15 +67,25 @@ def importCsv(path, negativeOnly=None, positiveOnly=None, curvesOnly=None):
     return result
 
 
+# Drive in the middle of the road
 samples = np.append(samples, importCsv('ccw'))
 samples = np.append(samples, importCsv('cw'))
-samples = np.append(samples, importCsv('curves-ccw', curvesOnly=True))
-samples = np.append(samples, importCsv('curves-2', curvesOnly=True))
-samples = np.append(samples, importCsv('curves-3', curvesOnly=True))
-samples = np.append(samples, importCsv('recovery-minus', negativeOnly=True))
-samples = np.append(samples, importCsv('recovery-plus', positiveOnly=True))
-samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly=True))
-samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly=True))
+
+# Curves
+samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
+samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-4', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-5', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-6', curvesOnly = True))
+
+# Recovery
+samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
+samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
+samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
 
 print('Total samples: ', len(samples))
 
@@ -140,7 +150,7 @@ model = Sequential()
 
 model.add(Lambda(lambda x: x/127.5 - 1.0,
         input_shape=(row, col, ch),
-        output_shape=(row, col, ch)))
+        output_shape=(row, col, ch), name='input'))
 
 model.add(Conv2D(24, 5, 5, name='conv_1_5x5', subsample=(2,3)))
 model.add(BatchNormalization(name='norm_1'))
@@ -166,10 +176,13 @@ model.add(Flatten(name='flat'))
 model.add(Dropout(0.5, name='drop_1'))
 model.add(Dense(128, activation='elu', name='fc_1'))
 model.add(Dropout(0.5, name='drop_2'))
-model.add(Dense(32, activation='elu', name='fc_2'))
+model.add(Dense(64, activation='elu', name='fc_2'))
+model.add(Dense(16, activation='elu', name='fc_3'))
 model.add(Dense(1, name='regression'))
+model.add(Activation(activation='tanh', name='result'))
 
 print(model.summary())
+
 
 # Train and save the model
 
