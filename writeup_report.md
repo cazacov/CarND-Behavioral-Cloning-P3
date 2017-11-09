@@ -48,7 +48,9 @@ python drive.py model.h5
 
 My first approach was to take the simplest possible model with a single dense layer to test the tool chain and to become acquainted with Keras. Once I got it working I replaced it with the "Nvidia" architecture presented in Udacity chapter 14 "Even More Powerful Network".
 
-My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). 
+That architecture was chosen because it represents a classical example of convolution networks that should be immune to image transformations like light scaling, rotation, flipping. The network should learn the meaning of features instead of just remembering pixel values. 
+
+My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 155-173). 
 
 As the information goes through the network the learned features should be getting more general with every next layer.
 In ideal case the layer outputs should have somewhat the following semantic meaning:
@@ -59,13 +61,14 @@ In ideal case the layer outputs should have somewhat the following semantic mean
 4. Parts (lane marker, sharp curve marker)
 5. Objects (traffic lane, road)
  
+Five convolution layers are followed by four fully-connected layers. That layers should learn how the steering angle depends on car's position on the road.
+Three fully connected layers have linear exponential activation (ELU). The last layer has the TANH activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
 
-These convolution layers are followed by four fully-connected layers that finally produce a single float value of desired steering angle.
-First three fully connected layers have linear exponential activation (ELU). The last layer has the TANH activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
+The TANH activation was chosen because it smoothly maps real numbers into range (-1,1).
 
-Then TANH activation was chosen because it smoothly maps any number into range (-1,1). The function is almost linear near 0.
+The size of convolution and flatten layers was chosen by trial and error as a compromise between accuracy and training time. 
 
-Training one epoch takes about 180 seconds on a GPU instance in cloud.  
+In the final version the network has 304,501 trainable parameters and and training one epoch takes about 180 seconds on a GPU instance in cloud.  
 
 ### Reducing overfitting ###
 
@@ -104,7 +107,7 @@ The model contains two dropout layers between fully-connected ones which should 
 
 #### Check that model does not overfitt ### 
 
-I shuffled samples and splitted them in training and validation datasets 80% / 20% to ensure that the model do not overfitt (code line 103). 
+I shuffled samples and splitted them in training and validation datasets 80% / 20% to ensure that the model do not overfitt (code line 113). 
 
 The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
@@ -118,7 +121,7 @@ After 16 epochs the validation loss gets stable und further learning does not im
 
 ### Model parameter tuning ###
 
-The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 178).
+The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 191).
 
 ### Training data ###
 
@@ -148,20 +151,21 @@ samples = np.append(samples, importCsv('cw'))
 samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
 samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
 samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-4', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-5', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-6', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-4'))
+samples = np.append(samples, importCsv('curves-5'))
+samples = np.append(samples, importCsv('curves-6'))
 
 # Recovery
 samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
-samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
 samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
-samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
 samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
+samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
 samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
+print('Total samples: ', len(samples))
 ```   
 
-These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 90390 samples.  
+These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 94632 samples.  
 
 ### Preprocessing ###
 

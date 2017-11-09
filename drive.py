@@ -50,7 +50,7 @@ set_speed = 9
 controller.set_desired(set_speed)
 
 def preprocess_color(image):
-    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+    hls = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
     gray = image[:, :, 1]
     return np.dstack((gray, hls[:, :, 2]))
 
