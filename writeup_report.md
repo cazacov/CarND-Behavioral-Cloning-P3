@@ -142,6 +142,9 @@ And here I show how to recover from the trouble by steering 15 degrees right:
 
 The import and filtering is handled in the function "importCsv".
 
+To learn only the recovery and not the bad behaviour, the function can be instructed to record only positive or ony negative values:
+<img src="images/recovery.png" />
+
 ```python
 # Drive in the middle of the road
 samples = np.append(samples, importCsv('ccw'))
