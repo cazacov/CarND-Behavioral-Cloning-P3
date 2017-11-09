@@ -62,13 +62,13 @@ In ideal case the layer outputs should have somewhat the following semantic mean
 5. Objects (traffic lane, road)
  
 Five convolution layers are followed by four fully-connected layers. That layers should learn how the steering angle depends on car's position on the road.
-Three fully connected layers have linear exponential activation (ELU). The last layer has the TANH activation and should provide the desired steering angle in range -1..+1 (that corresponds to -25..+25 degrees).
+Three fully connected layers have linear exponential activation (ELU). The last layer has the TANH activation and should provide the desired steering angle in range -1...+1 (that corresponds to -25..+25 degrees).
 
 The TANH activation was chosen because it smoothly maps real numbers into range (-1,1).
 
 The size of convolution and flatten layers was chosen by trial and error as a compromise between accuracy and training time. 
 
-In the final version the network has 304,501 trainable parameters and and training one epoch takes about 180 seconds on a GPU instance in cloud.  
+In the final version the network has 304,501 trainable parameters and training one epoch takes about 180 seconds on a GPU instance in cloud.  
 
 ### Reducing overfitting ###
 
@@ -117,7 +117,7 @@ The model was tested by running it through the simulator and ensuring that the v
 
 The chart looks exactly as expected. There is no sign of overfiiting when the training loss keeps decreasing, while the validation loss gets stuck on constant level.
 
-After 16 epochs the validation loss gets stable und further learning does not improve the accuracy.
+After 15 epochs the validation loss gets stable und further learning does not improve the accuracy.
 
 ### Model parameter tuning ###
 
@@ -142,7 +142,8 @@ And here I show how to recover from the trouble by steering 15 degrees right:
 
 The import and filtering is handled in the function "importCsv".
 
-To learn only the recovery and not the bad behaviour, the function can be instructed to record only positive or ony negative values:
+To learn only the recovery and not the bad behavior, the function can be instructed to record only positive or only negative values:
+
 <img src="images/recovery.png" />
 
 ```python
