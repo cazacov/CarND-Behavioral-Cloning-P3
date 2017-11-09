@@ -1,16 +1,17 @@
 import csv
 import cv2
 import numpy as np
+
 import sklearn
 from sklearn.model_selection import train_test_split
+
 from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Dropout, Activation
 from keras.layers import Conv2D, BatchNormalization, LeakyReLU
-from keras import optimizers
-from keras.callbacks import ModelCheckpoint
 
 samples = np.empty([0])
 
+# Read samples
 
 class Sample():
     def __init__(self, image_path, angle, flip):
@@ -50,7 +51,7 @@ def importCsv(path, negativeOnly=None, positiveOnly=None, curvesOnly=None):
         if positiveOnly is not None and measurement <= 0:
             continue
 
-        if curvesOnly is not None and abs(measurement) < 0.01:
+        if positiveOnly is not None and abs(measurement) < 0.05:
             continue
 
         camera_correction = 0.25
@@ -65,29 +66,29 @@ def importCsv(path, negativeOnly=None, positiveOnly=None, curvesOnly=None):
 
     return result
 
+
 # Drive in the middle of the road
 samples = np.append(samples, importCsv('ccw'))
 samples = np.append(samples, importCsv('cw'))
+
 # Curves
 samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
 samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
 samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-4'))
-samples = np.append(samples, importCsv('curves-5'))
-samples = np.append(samples, importCsv('curves-6'))
+samples = np.append(samples, importCsv('curves-4', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-5', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-6', curvesOnly = True))
+
 # Recovery
 samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
-samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
-samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
 samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
+samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
 samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
+samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
 samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
-np.random.shuffle(samples)
 
 print('Total samples: ', len(samples))
-np.random.shuffle(samples)
 
-print('Total samples: ', len(samples))
 
 # Preprocess images
 
@@ -103,10 +104,9 @@ def preprocess(sample):
     image = image[60:140]
     return image, angle
 
-
 def preprocess_color(image):
-    hls = cv2.cvtColor(image, cv2.COLOR_BGR2HLS)
-    gray = image[:, :, 1]
+    hls = cv2.cvtColor(image, cv2.COLOR_RGB2HLS)
+    gray = image[:, :, 1]   # Take G channel
     return np.dstack((gray, hls[:, :, 2]))
 
 
@@ -186,14 +186,9 @@ print(model.summary())
 
 # Train and save the model
 
-NUM_EPOCHS = 15
+from keras import optimizers
 
 optimizer = optimizers.Adam(lr=0.0005)
-
-
-checkpoint = ModelCheckpoint('best-model.h5', monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=False, mode='auto', period=1)
-callbacks_list = [checkpoint]
-
 model.compile(loss='mse', optimizer=optimizer)
 
 history_object = model.fit_generator(
@@ -201,9 +196,8 @@ history_object = model.fit_generator(
     samples_per_epoch = len(train_samples),
     validation_data = validation_generator,
     nb_val_samples = len(valid_samples),
-    nb_epoch=NUM_EPOCHS,
-    verbose = 1,
-    callbacks=callbacks_list
+    nb_epoch=10,
+    verbose = 1
 )
 
 model.save('model.h5')
