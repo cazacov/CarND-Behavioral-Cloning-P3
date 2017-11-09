@@ -65,11 +65,9 @@ def importCsv(path, negativeOnly=None, positiveOnly=None, curvesOnly=None):
 
     return result
 
-
 # Drive in the middle of the road
 samples = np.append(samples, importCsv('ccw'))
 samples = np.append(samples, importCsv('cw'))
-
 # Curves
 samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
 samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
@@ -77,7 +75,6 @@ samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
 samples = np.append(samples, importCsv('curves-4'))
 samples = np.append(samples, importCsv('curves-5'))
 samples = np.append(samples, importCsv('curves-6'))
-
 # Recovery
 samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
 samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
@@ -85,6 +82,9 @@ samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
 samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
 samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
 samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
+np.random.shuffle(samples)
+
+print('Total samples: ', len(samples))
 np.random.shuffle(samples)
 
 print('Total samples: ', len(samples))

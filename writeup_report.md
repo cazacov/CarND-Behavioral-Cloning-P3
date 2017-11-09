@@ -151,20 +151,21 @@ samples = np.append(samples, importCsv('cw'))
 samples = np.append(samples, importCsv('curves-ccw', curvesOnly = True ))
 samples = np.append(samples, importCsv('curves-2', curvesOnly = True))
 samples = np.append(samples, importCsv('curves-3', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-4', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-5', curvesOnly = True))
-samples = np.append(samples, importCsv('curves-6', curvesOnly = True))
+samples = np.append(samples, importCsv('curves-4'))
+samples = np.append(samples, importCsv('curves-5'))
+samples = np.append(samples, importCsv('curves-6'))
 
 # Recovery
 samples = np.append(samples, importCsv('recovery-minus', negativeOnly = True))
-samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
 samples = np.append(samples, importCsv('recovery-minus-2', negativeOnly = True))
-samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
 samples = np.append(samples, importCsv('bridge-2-minus', negativeOnly = True))
+samples = np.append(samples, importCsv('recovery-plus', positiveOnly = True))
+samples = np.append(samples, importCsv('recovery-plus-2', positiveOnly = True))
 samples = np.append(samples, importCsv('bridge-3-plus', positiveOnly = True))
+print('Total samples: ', len(samples))
 ```   
 
-These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 91170 samples.  
+These four scenarios with images from the center, left and right cameras and flipping every image provided me totally 94632 samples.  
 
 ### Preprocessing ###
 
