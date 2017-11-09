@@ -50,7 +50,7 @@ My first approach was to take the simplest possible model with a single dense la
 
 That architecture was chosen because it represents a classical example of convolution networks that should be immune to image transformations like light scaling, rotation, flipping. The network should learn the meaning of features instead of just remembering pixel values. 
 
-My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 145-163). 
+My model consists of a convolution neural network with 5 layers having kernel sizes 5x5 and 3x3 and depths between 24 and 64 (model.py lines 155-173). 
 
 As the information goes through the network the learned features should be getting more general with every next layer.
 In ideal case the layer outputs should have somewhat the following semantic meaning:
@@ -66,7 +66,9 @@ Three fully connected layers have linear exponential activation (ELU). The last 
 
 The TANH activation was chosen because it smoothly maps real numbers into range (-1,1).
 
-Training one epoch takes about 180 seconds on a GPU instance in cloud.  
+The size of convolution and flatten layers was chosen by trial and error as a compromise between accuracy and training time. 
+
+In the final version the network has 304,501 trainable parameters and and training one epoch takes about 180 seconds on a GPU instance in cloud.  
 
 ### Reducing overfitting ###
 
@@ -105,7 +107,7 @@ The model contains two dropout layers between fully-connected ones which should 
 
 #### Check that model does not overfitt ### 
 
-I shuffled samples and splitted them in training and validation datasets 80% / 20% to ensure that the model do not overfitt (code line 112). 
+I shuffled samples and splitted them in training and validation datasets 80% / 20% to ensure that the model do not overfitt (code line 113). 
 
 The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
 
@@ -119,7 +121,7 @@ After 16 epochs the validation loss gets stable und further learning does not im
 
 ### Model parameter tuning ###
 
-The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 190).
+The model used an adam optimizer which has default learning rate of 0.001. When using dropout layers it's recommended to use smaller learning rate, so I reduced it to 0.0005 (code line 191).
 
 ### Training data ###
 
